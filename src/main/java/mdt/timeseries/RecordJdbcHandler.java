@@ -8,7 +8,7 @@ import utils.jdbc.SQLDataType;
 import utils.jdbc.SQLDataTypes;
 import utils.stream.FStream;
 
-import mdt.model.DataType;
+import mdt.aas.DataType;
 
 /**
  *

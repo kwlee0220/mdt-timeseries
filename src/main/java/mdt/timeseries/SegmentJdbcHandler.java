@@ -21,11 +21,7 @@ import utils.stream.FStream;
 
 import de.fraunhofer.iosb.ilt.faaast.service.model.exception.ResourceNotFoundException;
 import mdt.model.ModelGenerationException;
-import mdt.model.resource.value.MultiLanguagePropertyValue;
-import mdt.timeseries.Record;
-import mdt.timeseries.RecordSchema;
-import mdt.timeseries.Segment;
-import mdt.timeseries.SegmentState;
+import mdt.model.sm.value.MultiLanguagePropertyValue;
 
 
 /**
@@ -176,7 +172,7 @@ public class SegmentJdbcHandler {
 
 		MultiLanguagePropertyValue desc = FOption.map(rset.getString("description"),
 															v -> new MultiLanguagePropertyValue("ko", v));
-		segment.setDescription(desc);
+//		segment.setDescription(desc);
 		
 		segment.setRecordCount(rset.getLong("record_count"));
 		segment.setStartTime(DATE_TIME.readJavaValueFromResultSet(rset, "start_time"));
