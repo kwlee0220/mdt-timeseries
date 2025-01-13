@@ -1,4 +1,4 @@
-package mdt.timeseries;
+package mdt.timeseries.impl;
 
 import static utils.jdbc.SQLDataTypes.DATE_TIME;
 import static utils.jdbc.SQLDataTypes.DURATION;
@@ -22,6 +22,10 @@ import utils.stream.FStream;
 import de.fraunhofer.iosb.ilt.faaast.service.model.exception.ResourceNotFoundException;
 import mdt.model.ModelGenerationException;
 import mdt.model.sm.value.MultiLanguagePropertyValue;
+import mdt.timeseries.DefaultRecord;
+import mdt.timeseries.RecordSchema;
+import mdt.timeseries.DefaultSegment;
+import mdt.timeseries.SegmentState;
 
 
 /**
@@ -47,10 +51,10 @@ public class SegmentJdbcHandler {
 
 	private static final String SQL_GET_SEGMENT
 		= "select * from segments where time_series_id = ? and start_time = ?";
-	public Segment load(Connection conn, String timeSeriesId, Instant startTime)
+	public DefaultSegment load(Connection conn, String timeSeriesId, Instant startTime)
 		throws ResourceNotFoundException {
 		try {
-			Segment segment = new Segment();
+			DefaultSegment segment = new DefaultSegment();
 			String sql = String.format(SQL_GET_SEGMENT);
 			try ( PreparedStatement pstmt = conn.prepareStatement(sql) ) {
 				STRING.fillPreparedStatement(pstmt, 1, timeSeriesId);
@@ -70,10 +74,10 @@ public class SegmentJdbcHandler {
 		}
 	}
 	
-	private Segment identifySegment(Connection conn, String timeSeriesId, Instant startTime, Duration duration) {
+	private DefaultSegment identifySegment(Connection conn, String timeSeriesId, Instant startTime, Duration duration) {
 		Instant endTime = startTime.plus(duration);
 		try {
-			Segment segment = new Segment();
+			DefaultSegment segment = new DefaultSegment();
 			segment.setStartTime(startTime);
 			segment.setEndTime(endTime);
 			
@@ -83,7 +87,7 @@ public class SegmentJdbcHandler {
 			}
 			segment.setRecordCount(count);
 			
-			Record last = getLastRecordInSegment(conn, startTime, endTime);
+			DefaultRecord last = getLastRecordInSegment(conn, startTime, endTime);
 			segment.setLastUpdate(last.getTimestamp());
 			
 			SegmentState state = (isCompletedSegment(conn, endTime))
@@ -137,7 +141,7 @@ public class SegmentJdbcHandler {
 	
 	private static final String SQL_LAST_RECORD
 		= "select %s from %s where ts >= ? and ts < ? order by ts desc limit 1";
-	private Record getLastRecordInSegment(Connection conn, Instant startTime, Instant endTime) throws SQLException {
+	private DefaultRecord getLastRecordInSegment(Connection conn, Instant startTime, Instant endTime) throws SQLException {
 		String sql = String.format(SQL_LAST_RECORD, m_columnNamesCsv, m_tableName);
 		try ( PreparedStatement pstmt = conn.prepareStatement(sql) ) {
 			SQLDataTypes.DATE_TIME.fillPreparedStatement(pstmt, 1, startTime);
@@ -146,7 +150,7 @@ public class SegmentJdbcHandler {
 			return JdbcRowSource.select(m_recordHandler::loadRecordValues)
 								.from(pstmt.executeQuery())
 								.first()
-								.map(colValues -> new Record(m_schema, colValues))
+								.map(colValues -> new DefaultRecord(m_schema, colValues))
 								.getOrNull();
 		}
 	}
@@ -162,7 +166,7 @@ public class SegmentJdbcHandler {
 		}
 	}
 	
-	private void load(Segment segment, ResultSet rset) throws SQLException {
+	private void load(DefaultSegment segment, ResultSet rset) throws SQLException {
 		String timeSeriesId = rset.getString("time_series_id");
 		int seqNo = rset.getInt("seq_no");
 		segment.setIdShort(String.format("%s_%07d", timeSeriesId, seqNo));

@@ -1,4 +1,4 @@
-package mdt.timeseries;
+package mdt.timeseries.impl;
 
 import org.eclipse.digitaltwin.aas4j.v3.model.AssetAdministrationShell;
 import org.eclipse.digitaltwin.aas4j.v3.model.ConceptDescription;

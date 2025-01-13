@@ -1,4 +1,4 @@
-package mdt.timeseries;
+package mdt.timeseries.impl;
 
 import de.fraunhofer.iosb.ilt.faaast.service.persistence.PersistenceConfig;
 

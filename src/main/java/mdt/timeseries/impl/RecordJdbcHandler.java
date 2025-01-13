@@ -1,4 +1,4 @@
-package mdt.timeseries;
+package mdt.timeseries.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,6 +9,7 @@ import utils.jdbc.SQLDataTypes;
 import utils.stream.FStream;
 
 import mdt.aas.DataType;
+import mdt.timeseries.RecordSchema;
 
 /**
  *

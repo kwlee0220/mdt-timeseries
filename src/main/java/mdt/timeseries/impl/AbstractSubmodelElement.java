@@ -1,4 +1,4 @@
-package mdt.timeseries;
+package mdt.timeseries.impl;
 
 import java.util.List;
 
